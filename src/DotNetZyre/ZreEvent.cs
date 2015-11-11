@@ -154,6 +154,9 @@ namespace DotNetZyre
                 case "STOP":
                 self.Type = ZreEventType.Stop;
                 break;
+                case "EVASIVE":
+                self.Type = ZreEventType.Evasive;
+                break;
             }
 
             return self;

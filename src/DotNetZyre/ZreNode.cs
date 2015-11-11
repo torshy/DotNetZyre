@@ -217,6 +217,12 @@ namespace DotNetZyre
 
                     var ping = new ZreMessage(ZreMessageType.Ping);
                     peer.Send(ping);
+
+                    // Inform the calling application this peer is being evasive
+                    _pipe
+                        .SendMoreFrame("EVASIVE")
+                        .SendMoreFrame(peer.Identity.ToString())
+                        .SendFrame(peer.Name);
                 }
             }
         }

@@ -2,12 +2,13 @@
 {
     public enum ZreEventType
     {
-        Enter,
+        Enter = 1,
         Exit,
         Join,
         Leave,
         Whisper,
         Shout,
-        Stop
+        Stop,
+        Evasive
     }
 }

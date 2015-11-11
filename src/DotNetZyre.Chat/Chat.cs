@@ -88,6 +88,9 @@ namespace DotNetZyre.Chat
                 case ZreEventType.Stop:
                     Console.WriteLine("{0} quit", @event.Sender);
                     break;
+                case ZreEventType.Evasive:
+                    Console.WriteLine("{0} is being evasive", @event.Name);
+                    break;
             }
         }
 
