@@ -610,9 +610,9 @@ namespace DotNetZyre
             return message;
         }
 
-        public static ZreMessage Receive(NetMQSocket input)
+        public static ZreMessage Receive(IReceivingSocket input)
         {
-            var message = input.ReceiveMultipartMessage();
+            NetMQMessage message = input.ReceiveMultipartMessage();
             if (message == null)
             {
                 return null;

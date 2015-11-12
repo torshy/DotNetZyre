@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using NetMQ;
 
@@ -149,14 +148,16 @@ namespace DotNetZyre
             return new Zre(context, name);
         }
 
-        public void Start()
+        public bool Start()
         {
             _actor.SendFrame(StartCommand);
+            return _actor.ReceiveSignal();
         }
 
         public void Stop()
         {
             _actor.SendFrame(StopCommand);
+            _actor.ReceiveSignal();
         }
 
         public void SetVerbose()
@@ -231,12 +232,12 @@ namespace DotNetZyre
             _actor.SendFrame(GetPeersCommand);
             var peers = new List<string>();
             var msg = _actor.ReceiveMultipartMessage();
-            while (msg.IsEmpty)
+            while (!msg.IsEmpty)
             {
                 peers.Add(msg.Pop().ConvertToString());
             }
 
-            return Enumerable.Empty<string>();
+            return peers;
         }
 
         public void SetHeader(string key, string value)

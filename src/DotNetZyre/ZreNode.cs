@@ -392,15 +392,33 @@ namespace DotNetZyre
         {
             //  Get the whole message off the pipe in one go
             var message = e.Socket.ReceiveMultipartMessage();
-            var command = message.Pop().ConvertToString();
+            if (message == null)
+            {
+                return;
+            }
 
+            var command = message.Pop().ConvertToString();
             switch (command)
             {
                 case Zre.StartCommand:
-                Start();
+                if (Start())
+                {
+                    e.Socket.SignalOK();
+                }
+                else
+                {
+                    e.Socket.SignalError();
+                }
                 break;
                 case Zre.StopCommand:
-                Stop();
+                if (Stop())
+                {
+                    e.Socket.SignalOK();
+                }
+                else
+                {
+                    e.Socket.SignalError();
+                }
                 break;
                 case Zre.SetNameCommand:
                 _name = message.Pop().ConvertToString();
@@ -557,7 +575,7 @@ namespace DotNetZyre
                         ZrePeer peer;
                         if (_peers.TryGetValue(identity, out peer))
                         {
-                            var header = peer.GetHeader(key, defaultValue: null);
+                            var header = peer.GetHeader(key, defaultValue: string.Empty);
                             _pipe.SendFrame(header);
                         }
                         else
@@ -575,6 +593,7 @@ namespace DotNetZyre
                     {
                         _inbox.Bind(endpoint);
                         _endpoint = endpoint;
+                        _pipe.SignalOK();
                     }
                     catch (Exception)
                     {

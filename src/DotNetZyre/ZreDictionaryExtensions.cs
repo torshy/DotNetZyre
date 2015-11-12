@@ -9,14 +9,17 @@ namespace DotNetZyre
         public static byte[] PackHeaders(this IDictionary<string, string> headers)
         {
             using (var stream = new MemoryStream())
-            using (var writer = new BinaryWriter(stream))
+            using (var writer = new BinaryWriter(stream, Encoding.UTF8))
             {
                 foreach (var header in headers)
                 {
-                    writer.Write((short)header.Key.Length);
-                    writer.Write(header.Key);
-                    writer.Write(header.Value.Length);
-                    writer.Write(header.Value);
+                    var keyData = Encoding.UTF8.GetBytes(header.Key);
+                    var valueData = Encoding.UTF8.GetBytes(header.Value);
+
+                    writer.Write((short)keyData.Length);
+                    writer.Write(keyData);
+                    writer.Write(valueData.Length);
+                    writer.Write(valueData);
                 }
 
                 return stream.ToArray();
@@ -27,7 +30,7 @@ namespace DotNetZyre
         {
             var headers = new Dictionary<string, string>();
             using (var stream = new MemoryStream(data))
-            using (var reader = new BinaryReader(stream))
+            using (var reader = new BinaryReader(stream, Encoding.UTF8))
             {
                 while (stream.Position < stream.Length)
                 {

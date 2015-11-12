@@ -1,4 +1,5 @@
 using System;
+using System.CodeDom;
 using System.Linq;
 using NetMQ;
 using NetMQ.Sockets;
@@ -43,7 +44,6 @@ namespace DotNetZyre.Chat
 
             _zre = Zre.Create(_ctx, _name);
             _zre.ReceiveReady += OnZreReady;
-            _zre.SetVerbose();
 
             _poller = new Poller();
             _poller.AddSocket(_zre);
@@ -62,35 +62,40 @@ namespace DotNetZyre.Chat
             switch (@event.Type)
             {
                 case ZreEventType.Enter:
-                    Console.WriteLine("* {0} came online", @event.Name);
-                    break;
+                string helloHeader;
+                if (@event.Headers.TryGetValue("HELLO", out helloHeader))
+                {
+                    Console.WriteLine("Header value = " + helloHeader);
+                }
+                Console.WriteLine("* {0} came online", @event.Name);
+                break;
                 case ZreEventType.Exit:
-                    Console.WriteLine("* {0} left us", @event.Name);
-                    break;
+                Console.WriteLine("* {0} left us", @event.Name);
+                break;
                 case ZreEventType.Join:
-                    Console.WriteLine("* {0} joined {1}", @event.Name, @event.Group);
-                    break;
+                Console.WriteLine("* {0} joined {1}", @event.Name, @event.Group);
+                break;
                 case ZreEventType.Leave:
-                    Console.WriteLine("* {0} left {1}", @event.Name, @event.Group);
-                    break;
+                Console.WriteLine("* {0} left {1}", @event.Name, @event.Group);
+                break;
                 case ZreEventType.Whisper:
-                    Console.WriteLine("({0}) WHISPERS {1}",
-                        @event.Name,
-                        string.Join(" ", @event.Message.Select(x => x.ConvertToString())));
-                    break;
+                Console.WriteLine("({0}) WHISPERS {1}",
+                    @event.Name,
+                    string.Join(" ", @event.Message.Select(x => x.ConvertToString())));
+                break;
                 case ZreEventType.Shout:
-                    Console.WriteLine(
-                        "[{0}] ({1}) SHOUTS {2}",
-                        @event.Group,
-                        @event.Name,
-                        string.Join(" ", @event.Message.Select(x => x.ConvertToString())));
-                    break;
+                Console.WriteLine(
+                    "[{0}] ({1}) SHOUTS {2}",
+                    @event.Group,
+                    @event.Name,
+                    string.Join(" ", @event.Message.Select(x => x.ConvertToString())));
+                break;
                 case ZreEventType.Stop:
-                    Console.WriteLine("{0} quit", @event.Sender);
-                    break;
+                Console.WriteLine("{0} quit", @event.Sender);
+                break;
                 case ZreEventType.Evasive:
-                    Console.WriteLine("{0} is being evasive", @event.Name);
-                    break;
+                Console.WriteLine("{0} is being evasive", @event.Name);
+                break;
             }
         }
 
@@ -104,18 +109,21 @@ namespace DotNetZyre.Chat
                 {
                     _zre.Shout("TEST", message.Pop().ConvertToString());
                 }
-                    break;
+                break;
                 case InterfaceCommand:
                 {
                     _zre.SetInterface(message.Pop().ConvertToString());
+
                 }
-                    break;
+                break;
                 case StartCommand:
                 {
+                    _zre.SetVerbose();
+                    _zre.SetHeader("HELLO", "BIFFORAMA");
                     _zre.Start();
                     _zre.Join("TEST");
                 }
-                    break;
+                break;
             }
         }
 

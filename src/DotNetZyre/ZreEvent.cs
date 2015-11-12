@@ -7,6 +7,15 @@ namespace DotNetZyre
     {
         #region Fields
 
+        public static readonly string Enter = "ENTER";
+        public static readonly string Exit = "EXIT";
+        public static readonly string Join = "JOIN";
+        public static readonly string Leave = "LEAVE";
+        public static readonly string Whisper = "WHISPER";
+        public static readonly string Shout = "SHOUT";
+        public static readonly string Stop = "STOP";
+        public static readonly string Evasive = "EVASIVE";
+
         private string _address;
         private string _group;
         private IDictionary<string, string> _headers;
@@ -109,7 +118,7 @@ namespace DotNetZyre
 
         public static ZreEvent Create(NetMQMessage message)
         {
-            if (message == null)
+            if (message == null || message.IsEmpty || message.FrameCount < 3)
             {
                 return null;
             }
@@ -119,9 +128,8 @@ namespace DotNetZyre
             self.Sender = message.Pop().ConvertToString();
             self.Name = message.Pop().ConvertToString();
 
-            switch (type)
+            if (type == Enter)
             {
-                case "ENTER":
                 self.Type = ZreEventType.Enter;
                 var headersFrame = message.Pop();
                 if (headersFrame != null)
@@ -129,34 +137,41 @@ namespace DotNetZyre
                     var headers = headersFrame.ToByteArray().UnpackHeaders();
                     self.Headers = headers;
                 }
+
                 self.Address = message.Pop().ConvertToString();
-                break;
-                case "EXIT":
+            }
+            else if (type == Exit)
+            {
                 self.Type = ZreEventType.Exit;
-                break;
-                case "JOIN":
+            }
+            else if (type == Join)
+            {
                 self.Type = ZreEventType.Join;
                 self.Group = message.Pop().ConvertToString();
-                break;
-                case "LEAVE":
+            }
+            else if (type == Leave)
+            {
                 self.Type = ZreEventType.Leave;
                 self.Group = message.Pop().ConvertToString();
-                break;
-                case "WHISPER":
+            }
+            else if (type == Whisper)
+            {
                 self.Type = ZreEventType.Whisper;
                 self.Message = message;
-                break;
-                case "SHOUT":
+            }
+            else if (type == Shout)
+            {
                 self.Type = ZreEventType.Shout;
                 self.Group = message.Pop().ConvertToString();
                 self.Message = message;
-                break;
-                case "STOP":
+            }
+            else if (type == Stop)
+            {
                 self.Type = ZreEventType.Stop;
-                break;
-                case "EVASIVE":
+            }
+            else if (type == Evasive)
+            {
                 self.Type = ZreEventType.Evasive;
-                break;
             }
 
             return self;

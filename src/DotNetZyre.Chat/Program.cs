@@ -65,8 +65,10 @@ namespace DotNetZyre.Chat
             using (var context = NetMQContext.Create())
             {
                 var actor = NetMQActor.Create(context, new Chat(context, name));
-                actor.SendMore(Chat.InterfaceCommand).Send(address);
-                actor.Send(Chat.StartCommand);
+                actor
+                    .SendMoreFrame(Chat.InterfaceCommand)
+                    .SendFrame(address);
+                actor.SendFrame(Chat.StartCommand);
 
                 var input = string.Empty;
                 while (!string.Equals(input, "EXIT", StringComparison.InvariantCultureIgnoreCase))
@@ -74,7 +76,9 @@ namespace DotNetZyre.Chat
                     input = Console.ReadLine();
                     if (!string.IsNullOrWhiteSpace(input))
                     {
-                        actor.SendMore(Chat.ShoutCommand).Send(input);
+                        actor
+                            .SendMoreFrame(Chat.ShoutCommand)
+                            .SendFrame(input);
                     }
                 }
             }
