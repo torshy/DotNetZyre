@@ -203,7 +203,7 @@ namespace DotNetZyre
 
         public void Whisper(Guid peerIdentity, string format, params object[] args)
         {
-            var message = string.Format(format, args);
+            var message = args != null && args.Length > 0 ? string.Format(format, args) : format;
             _actor
                 .SendMoreFrame(WhisperCommand)
                 .SendMoreFrame(peerIdentity.ToString())
@@ -220,7 +220,7 @@ namespace DotNetZyre
 
         public void Shout(string group, string format, params object[] args)
         {
-            var message = string.Format(format, args);
+            var message = args != null && args.Length > 0 ? string.Format(format, args) : format;
             _actor
                 .SendMoreFrame(ShoutCommand)
                 .SendMoreFrame(group)

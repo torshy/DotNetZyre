@@ -4,6 +4,8 @@
     {
         #region Fields
 
+        public static readonly byte ProtocolVersion = 2;
+        public static readonly byte ProtocolSignature = 1;
         public static readonly byte BeaconVersion = 0x1;
         public static readonly int DynamicPortFrom = 0xc000;
         public static readonly int DynamicPortTo = 0xffff;

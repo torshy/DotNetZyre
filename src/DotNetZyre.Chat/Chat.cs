@@ -1,5 +1,5 @@
 using System;
-using System.CodeDom;
+using System.Diagnostics;
 using System.Linq;
 using NetMQ;
 using NetMQ.Sockets;
@@ -62,12 +62,15 @@ namespace DotNetZyre.Chat
             switch (@event.Type)
             {
                 case ZreEventType.Enter:
-                string helloHeader;
-                if (@event.Headers.TryGetValue("HELLO", out helloHeader))
-                {
-                    Console.WriteLine("Header value = " + helloHeader);
-                }
                 Console.WriteLine("* {0} came online", @event.Name);
+                if (@event.Headers.Count > 0)
+                {
+                    Console.WriteLine("* Headers:");
+                    foreach (var kvp in @event.Headers)
+                    {
+                        Console.WriteLine("\t" + kvp.Key + "=" + kvp.Value);
+                    }
+                }
                 break;
                 case ZreEventType.Exit:
                 Console.WriteLine("* {0} left us", @event.Name);
@@ -107,7 +110,7 @@ namespace DotNetZyre.Chat
             {
                 case ShoutCommand:
                 {
-                    _zre.Shout("TEST", message.Pop().ConvertToString());
+                    _zre.Shout("GLOBAL", message.Pop().ConvertToString());
                 }
                 break;
                 case InterfaceCommand:
@@ -119,9 +122,10 @@ namespace DotNetZyre.Chat
                 case StartCommand:
                 {
                     _zre.SetVerbose();
-                    _zre.SetHeader("HELLO", "BIFFORAMA");
+                    _zre.SetHeader("X-TYPE", "CHAT");
+                    _zre.SetHeader("X-PID", Process.GetCurrentProcess().Id.ToString());
                     _zre.Start();
-                    _zre.Join("TEST");
+                    _zre.Join("GLOBAL");
                 }
                 break;
             }

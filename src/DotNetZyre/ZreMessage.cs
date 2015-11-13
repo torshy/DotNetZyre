@@ -170,7 +170,7 @@ namespace DotNetZyre
             msg._needleWriter = new BinaryWriter(new MemoryStream(msg._needle));
             msg._ceiling = msg._needle.Length + frame.MessageSize;
             var signature = msg._needleReader.GetNumber2();
-            if (signature != (0xAAA0 | 1))
+            if (signature != (0xAAA0 | ZreConstants.ProtocolSignature))
             {
                 return false;
             }
@@ -206,7 +206,7 @@ namespace DotNetZyre
             msg._needleWriter = new BinaryWriter(new MemoryStream(msg._needle));
             msg._ceiling = msg._needle.Length + frame.MessageSize;
             var signature = msg._needleReader.GetNumber2();
-            if (signature != (0xAAA0 | 1))
+            if (signature != (0xAAA0 | ZreConstants.ProtocolSignature))
             {
                 return null;
             }
@@ -218,7 +218,7 @@ namespace DotNetZyre
                 case ZreMessageType.Hello:
                 {
                     msg._version = msg._needleReader.GetNumber1();
-                    if (msg._version != 2)
+                    if (msg._version != ZreConstants.ProtocolVersion)
                     {
                         return null;
                     }
@@ -248,7 +248,7 @@ namespace DotNetZyre
                 case ZreMessageType.Whisper:
                 {
                     msg._version = msg._needleReader.GetNumber1();
-                    if (msg._version != 2)
+                    if (msg._version != ZreConstants.ProtocolVersion)
                     {
                         return null;
                     }
@@ -270,7 +270,7 @@ namespace DotNetZyre
                 case ZreMessageType.Shout:
                 {
                     msg._version = msg._needleReader.GetNumber1();
-                    if (msg._version != 2)
+                    if (msg._version != ZreConstants.ProtocolVersion)
                     {
                         return null;
                     }
@@ -293,7 +293,7 @@ namespace DotNetZyre
                 case ZreMessageType.Join:
                 {
                     msg._version = msg._needleReader.GetNumber1();
-                    if (msg._version != 2)
+                    if (msg._version != ZreConstants.ProtocolVersion)
                     {
                         return null;
                     }
@@ -305,7 +305,7 @@ namespace DotNetZyre
                 case ZreMessageType.Leave:
                 {
                     msg._version = msg._needleReader.GetNumber1();
-                    if (msg._version != 2)
+                    if (msg._version != ZreConstants.ProtocolVersion)
                     {
                         return null;
                     }
@@ -317,7 +317,7 @@ namespace DotNetZyre
                 case ZreMessageType.Ping:
                 {
                     msg._version = msg._needleReader.GetNumber1();
-                    if (msg._version != 2)
+                    if (msg._version != ZreConstants.ProtocolVersion)
                     {
                         return null;
                     }
@@ -327,7 +327,7 @@ namespace DotNetZyre
                 case ZreMessageType.PingOk:
                 {
                     msg._version = msg._needleReader.GetNumber1();
-                    if (msg._version != 2)
+                    if (msg._version != ZreConstants.ProtocolVersion)
                     {
                         return null;
                     }
@@ -459,12 +459,12 @@ namespace DotNetZyre
             msg._needle = frame.ToByteArray();
             msg._needleReader = new BinaryReader(new MemoryStream(msg._needle));
             msg._needleWriter = new BinaryWriter(new MemoryStream(msg._needle));
-            msg._needleWriter.PutNumber2(0xAAA0 | 1);
+            msg._needleWriter.PutNumber2(0xAAA0 | ZreConstants.ProtocolSignature);
             msg._needleWriter.PutNumber1((byte)msg._id);
             switch (msg._id)
             {
                 case ZreMessageType.Hello:
-                msg._needleWriter.PutNumber1(2);
+                msg._needleWriter.PutNumber1(ZreConstants.ProtocolVersion);
                 msg._needleWriter.PutNumber2(msg._sequence);
                 if (!string.IsNullOrEmpty(msg._endpoint))
                 {
@@ -515,12 +515,12 @@ namespace DotNetZyre
                 break;
 
                 case ZreMessageType.Whisper:
-                msg._needleWriter.PutNumber1(2);
+                msg._needleWriter.PutNumber1(ZreConstants.ProtocolVersion);
                 msg._needleWriter.PutNumber2(msg._sequence);
                 break;
 
                 case ZreMessageType.Shout:
-                msg._needleWriter.PutNumber1(2);
+                msg._needleWriter.PutNumber1(ZreConstants.ProtocolVersion);
                 msg._needleWriter.PutNumber2(msg._sequence);
                 if (!string.IsNullOrEmpty(msg._group))
                 {
@@ -533,7 +533,7 @@ namespace DotNetZyre
                 break;
 
                 case ZreMessageType.Join:
-                msg._needleWriter.PutNumber1(2);
+                msg._needleWriter.PutNumber1(ZreConstants.ProtocolVersion);
                 msg._needleWriter.PutNumber2(msg._sequence);
                 if (!string.IsNullOrEmpty(msg._group))
                 {
@@ -547,7 +547,7 @@ namespace DotNetZyre
                 break;
 
                 case ZreMessageType.Leave:
-                msg._needleWriter.PutNumber1(2);
+                msg._needleWriter.PutNumber1(ZreConstants.ProtocolVersion);
                 msg._needleWriter.PutNumber2(msg._sequence);
                 if (!string.IsNullOrEmpty(msg._group))
                 {
@@ -561,12 +561,12 @@ namespace DotNetZyre
                 break;
 
                 case ZreMessageType.Ping:
-                msg._needleWriter.PutNumber1(2);
+                msg._needleWriter.PutNumber1(ZreConstants.ProtocolVersion);
                 msg._needleWriter.PutNumber2(msg._sequence);
                 break;
 
                 case ZreMessageType.PingOk:
-                msg._needleWriter.PutNumber1(2);
+                msg._needleWriter.PutNumber1(ZreConstants.ProtocolVersion);
                 msg._needleWriter.PutNumber2(msg._sequence);
                 break;
             }
